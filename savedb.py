@@ -57,7 +57,9 @@ def save_all(data):
 
 def filter_by_title(title):
     session = Session()
-    return session.query(Course).filter(Course.title.like(f'%{title}%'), Course.mediaUrl.is_(None)).all()
+    #return session.query(Course).filter(Course.title.like(f'%{title}%'), Course.mediaUrl.is_(None)).all()
+    return session.query(Course).filter(Course.title.like(f'%{title}%')).all()
+
 
 def update_media_url(id, url):
     session = Session()

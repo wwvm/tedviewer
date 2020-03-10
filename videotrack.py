@@ -27,6 +27,10 @@ def titleLike(title):
             print(c.title, 'Media url not found')
             
 
+def downloadVedio(course):
+    
+    pass
+
 #getMedia(url)
 titleLike('我的')
 
