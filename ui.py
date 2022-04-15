@@ -3,7 +3,8 @@ from kivymd.uix.list import TwoLineIconListItem
 from kivy.properties import StringProperty
 import savedb
 import os
-
+from multiprocessing import Process
+from videotrack import titleLike, downloadVideo
 import chn_support
 
 path = '../data/'
@@ -11,46 +12,39 @@ path = '../data/'
 class CustomTwoLineIconListItem(TwoLineIconListItem):
     mediaUrl = StringProperty()
     courseId = StringProperty()
+    icon = StringProperty()
 
     def on_release(self):
         media = f'{path}{self.courseId}.mkv'
 
         if os.path.exists(media):
-            os.system(f'python simple_VLCplayer.py {media}')
-            return
-            import vlc
-            from simple_VLCplayer import simpleVLCplay
-            print(media)
-            p = vlc.MediaPlayer(media)
-            print('playing...')
-
-            simpleVLCplay(p, title=self.text)  # never returns
-        elif self.mediaUrl is None:
-            print('retrieving...')
-            # retrieve media url
-            # download file
-            print('downloading...')
+            os.system(f'open {media}')
+        elif self.mediaUrl == '':
+            print('Not Found!')
         else:
-            os.system(f'python simple_VLCplayer.py {self.mediaUrl}')
+            proc = Process(target=downloadVideo, args=(path, self.courseId, self.mediaUrl))
+            proc.start()
+            proc.join()
+            #os.system(f'python simple_VLCplayer.py {self.mediaUrl}')
             # download
-            print('downloading...')
+            #print('downloading...')
 
 
 class UiApp(MDApp):
-    def build(self):
-        pass
 
     def search(self, text):
         self.root.ids.rv.data = []
-        if text:
-            data = savedb.filter_by_title(text)
+
+        if text is not None and len(text) > 1:
+            data = titleLike(text) # savedb.filter_by_title(text)
             self.root.ids.matched.text = f'{len(data)}条'
             for c in data:
                 self.root.ids.rv.data.append({
                     'viewclass': 'CustomTwoLineIconListItem',
                     'text': c.title,
                     'secondary_text': c.courseUrl,
-                    'mediaUrl': c.mediaUrl,
+                    'mediaUrl': c.mediaUrl if c.mediaUrl is not None else '',
+                    'icon': 'play-circle' if c.mediaUrl is not None else 'arrow-down-circle',
                     'courseId': c.courseId,
                     })
 

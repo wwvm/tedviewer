@@ -2,6 +2,7 @@ import requests
 import re
 import codecs
 import savedb
+import ffmpeg
 
 rule = r'mp4ShdUrl(?:Orign)?:"(?=http)([^"]+)'
 rule1 = r'dUrl(?:Orign)?:"(?=http)([^"]+)'
@@ -19,18 +20,20 @@ def getMedia(url):
 def titleLike(title):
     rs = savedb.filter_by_title(title)
     for c in rs:
+        if c.mediaUrl is not None: 
+            continue
         mediaUrl = getMedia(c.courseUrl)
         if mediaUrl is not None:
             savedb.update_media_url(c.Id, mediaUrl)
             print(c.title, mediaUrl)
         else:
             print(c.title, 'Media url not found')
+    return rs
             
-
-def downloadVedio(course):
-    
-    pass
+def downloadVideo(path, courseId, mediaUrl):
+    print ('downloading ' + courseId)
+    ffmpeg.input(mediaUrl).output(f'{path}/{courseId}.mkv', vf='scale=640:-1').run()
 
 #getMedia(url)
-titleLike('我的')
+#titleLike('我的')
 
