@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+selenium = "*"
+requests = "*"
+sqlalchemy = "*"
+ffmpeg-python = "*"
+python-vlc = "*"
+pycocoa = "*"
+kivymd = "*"
+
+[requires]
+python_version = "3.7"
